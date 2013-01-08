@@ -45,7 +45,7 @@ set custom_colors_template = "%%new%% .userpic a { background-color: %%backgroun
 
 propgroup colors {
     property use color_page_background;
-    
+
     property Color color_page_title_background { des = "Title background"; }
     property use color_page_title;
     property Color color_header_background { des = "Header background"; }
@@ -113,6 +113,7 @@ propgroup fonts {
     property use font_module_text;
     property use font_module_text_size;
     property use font_module_text_units;
+    property use font_sources;
 }
 
 set font_base = "Arial";
@@ -196,6 +197,8 @@ propgroup text {
     property use text_read_comments;
     property use text_post_comment_friends;
     property use text_read_comments_friends;
+    property use text_read_comments_screened_visible;
+    property use text_read_comments_screened;
 
     property use text_skiplinks_back;
     property use text_skiplinks_forward;
@@ -384,7 +387,7 @@ function Page::print_default_stylesheet() {
         .entry .userpic a, .comment .userpic a { right: 10px; left: auto; }""";
         }
 """
-/* believe me, this style is much easier to deal with if you 
+/* believe me, this style is much easier to deal with if you
 just leave this here. It says "let's use the IE box model" for
 non IE browsers */
 * { box-sizing:border-box; -moz-box-sizing:border-box }
@@ -419,7 +422,7 @@ q { font-style: italic;
     position: relative;
     $container_background
 }
- 
+
 #header {
     $page_title_colors
     margin: 0;
@@ -824,7 +827,7 @@ $userpic_css
 
 .entry-management-links, .entry-interaction-links, .comment-management-links, .comment-interaction-links {
     margin: 0;
-    padding: 0; 
+    padding: 0;
     display: inline;
     font-size: .8em;
     text-align: right;
@@ -848,6 +851,11 @@ $userpic_css
 .entry .metadata-label {
     font-weight: bold;
 }
+
+.comment-posted {
+    font-weight:bold;
+}
+
 .full .comment-poster {
     display: inline-block;
     min-width: 40%;
