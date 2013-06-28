@@ -15,7 +15,7 @@
 # Authors:
 #      Denise Paolucci <denise@dreamwidth.org>
 #
-# Copyright (c) 2009-2013 by Dreamwidth Studios, LLC.
+# Copyright (c) 2009 by Dreamwidth Studios, LLC.
 #
 # This program is NOT free software or open-source; you can use it as an
 # example of how to implement your own site-specific extensions to the
@@ -28,7 +28,6 @@ body<=
 <?_code
 {
     use strict;
-    use LJ::Entry;
     use vars qw/ %POST @errors @warnings /;
 
     # for pages that require authentication
@@ -139,8 +138,10 @@ body<=
             # "admin: unmigrated", so the suggestions maintainer can find
             # any/all unposted bugzilla links.
 
-            my $e = LJ::Entry->new_from_url( $journalpost->{url} );
-            my ( $year, $mon, $mday, $hour, $min ) = split( /\D/, $e->eventtime_mysql || "" );
+            # get the user's timzeone and put it into +/-0800 format
+            # if we can't figure it out, then just guess based on suggestions bot
+            my ( $remote_tz_sign, $remote_tz_offset ) = ( $remote->timezone =~ m/([+|-])?(\d+)/ );
+            my $remote_tz = defined $remote_tz_offset ? sprintf( "%s%02d00", $remote_tz_sign || "+", $remote_tz_offset ) : "guess";
 
             my $bugzillapost = LJ::Protocol::do_request( 'postevent', {
                 'ver'             => $LJ::PROTOCOL_VER,
@@ -151,15 +152,7 @@ body<=
                 'security'        => 'private',
                 'usejournal_okay' => 1,
                 'props'           => { 'taglist' => 'admin: unmigrated' },
-
-                # make sure the time matches for both admin entry and public entry
-                # for easier admin tracking
-                'year'            => $year,
-                'mon'             => $mon,
-                'day'             => $mday,
-                'hour'            => $hour,
-                'min'             => $min,
-
+                'tz'              => $remote_tz,
                 }, \$response2, {
                 'nopassword'      => 1,
                 } );
